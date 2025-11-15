@@ -1,0 +1,249 @@
+openapi: 3.0.3
+info:
+  title: News Service API
+  description: REST API for ingesting/searching news, nearby lookup, and LLM summarization.
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8080
+    description: local dev server
+paths:
+  /v1/news/ingest:
+    post:
+      summary: Ingest multiple articles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ArticleInput'
+      responses:
+        "201":
+          description: Number of imported articles
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                    properties:
+                      imported:
+                        type: integer
+  /v1/news:
+    get:
+      summary: List articles (optionally use query param for search)
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          description: fulltext search query
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: size
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: list of articles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponse'
+  /v1/news/search:
+    get:
+      summary: Search articles (alias to /v1/news?q=)
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponse'
+  /v1/news/category:
+    get:
+      summary: Get articles by category
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: list by category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponse'
+  /v1/news/trending:
+    get:
+      summary: Get trending articles (by relevance)
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: trending list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponse'
+  /v1/news/nearby:
+    get:
+      summary: Get articles within radius (km) of lat/lon
+      parameters:
+        - in: query
+          name: lat
+          schema:
+            type: number
+          required: true
+        - in: query
+          name: lon
+          schema:
+            type: number
+          required: true
+        - in: query
+          name: radius
+          schema:
+            type: number
+            description: radius in kilometers
+          required: true
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: nearby articles with distance_km field
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponse'
+  /v1/news/{id}:
+    get:
+      summary: Get a single article by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: single article
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Article'
+        "404":
+          description: not found
+  /v1/news/{id}/summary:
+    post:
+      summary: Generate and save LLM summary for an article
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: returned summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  summary:
+                    type: string
+        "404":
+          description: article not found
+        "500":
+          description: LLM or server error
+components:
+  schemas:
+    ArticleInput:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "4f168b9a-8861-43d3-a1ac-b44a298910ea"
+        title:
+          type: string
+          example: "Local Golang Meetup Happening"
+        description:
+          type: string
+        url:
+          type: string
+        published_at:
+          type: string
+          format: date-time
+        source:
+          type: string
+        categories:
+          type: array
+          items:
+            type: string
+        relevance_score:
+          type: number
+        latitude:
+          type: number
+        longitude:
+          type: number
+        llm_summary:
+          type: string
+    Article:
+      allOf:
+        - $ref: '#/components/schemas/ArticleInput'
+        - type: object
+          properties:
+            distance_km:
+              type: number
+    ListResponse:
+      type: object
+      properties:
+        meta:
+          type: object
+          properties:
+            total:
+              type: integer
+            page:
+              type: integer
+            size:
+              type: integer
+            query:
+              type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Article'

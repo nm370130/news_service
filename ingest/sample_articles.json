@@ -1,0 +1,24 @@
+[
+  {
+    "title": "Local Golang Meetup Happening",
+    "description": "A meetup about Go in the city center.",
+    "url": "https://example.com/go-meetup",
+    "published_at": "2025-11-10T12:00:00Z",
+    "source": "LocalNews",
+    "categories": ["Technology", "Meetup"],
+    "relevance_score": 0.8,
+    "latitude": 12.9716,
+    "longitude": 77.5946
+  },
+  {
+    "title": "New Cafe Opens Downtown",
+    "description": "Cozy cafe for developers and designers.",
+    "url": "https://example.com/cafe",
+    "published_at": "2025-11-12T09:00:00Z",
+    "source": "CityPress",
+    "categories": ["Lifestyle"],
+    "relevance_score": 0.5,
+    "latitude": 12.9720,
+    "longitude": 77.5950
+  }
+]

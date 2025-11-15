@@ -1,0 +1,49 @@
+services:
+  llama:
+    image: ollama/ollama:latest
+    # or other image that exposes HTTP API
+    ports:
+      - "11434:11434"
+    # add volumes or model setup per your server docs
+
+  postgres:
+    platform: linux/arm64
+    image: postgres:14
+    environment:
+      POSTGRES_DB: scout_db
+      POSTGRES_USER: scout_user
+      POSTGRES_PASSWORD: Scout@1111
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    platform: linux/arm64
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  app:
+    image: news-service:arm64
+    platform: linux/arm64
+    container_name: news-app
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=scout_db
+      - DB_USER=scout_user
+      - DB_PASS=Scout@1111
+      - REDIS_ADDR=redis:6379
+      - LLM_URL=http://host.docker.internal:11434/api/generate
+      - LLM_SERVER_TYPE=ollama
+      - LLM_MODEL=smollm2:135m   # e.g. llama2, or the model name you installed in Ollama
+      - LLM_TIMEOUT_SECONDS=60
+
+    depends_on:
+      - postgres
+      - redis
+volumes:
+  pgdata:

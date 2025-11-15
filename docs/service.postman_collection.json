@@ -1,0 +1,57 @@
+{
+  "info": {
+    "name": "News Service",
+    "_postman_id": "news-service-collection",
+    "description": "Postman collection for News Service API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Ingest articles",
+      "request": {
+        "method": "POST",
+        "header": [{"key":"Content-Type","value":"application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "[{\"id\":\"4f168b9a-8861-43d3-a1ac-b44a298910ea\",\"title\":\"Local Golang Meetup Happening\",\"description\":\"A meetup about Go in the city center.\",\"url\":\"https://example.com/go-meetup\",\"published_at\":\"2025-11-10T12:00:00Z\",\"source\":\"LocalNews\",\"categories\":[\"Technology\",\"Meetup\"],\"relevance_score\":0.8,\"latitude\":12.9716,\"longitude\":77.5946,\"llm_summary\":\"\"}]"
+        },
+        "url": { "raw": "http://localhost:8080/v1/news/ingest", "protocol": "http", "host": ["localhost"], "port":"8080", "path":["v1","news","ingest"] }
+      }
+    },
+    {
+      "name": "Search",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "http://localhost:8080/v1/news/search?q=meetup&limit=5", "protocol": "http", "host": ["localhost"], "port":"8080", "path":["v1","news","search"], "query":[{"key":"q","value":"meetup"},{"key":"limit","value":"5"}] }
+      }
+    },
+    {
+      "name": "List (alias)",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "http://localhost:8080/v1/news?page=1&size=10", "protocol": "http", "host": ["localhost"], "port":"8080", "path":["v1","news"], "query":[{"key":"page","value":"1"},{"key":"size","value":"10"}] }
+      }
+    },
+    {
+      "name": "Nearby",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "http://localhost:8080/v1/news/nearby?lat=12.9716&lon=77.5946&radius=10&limit=20", "protocol": "http", "host": ["localhost"], "port":"8080", "path":["v1","news","nearby"], "query":[{"key":"lat","value":"12.9716"},{"key":"lon","value":"77.5946"},{"key":"radius","value":"10"},{"key":"limit","value":"20"}] }
+      }
+    },
+    {
+      "name": "Get by ID",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "http://localhost:8080/v1/news/4f168b9a-8861-43d3-a1ac-b44a298910ea", "protocol": "http", "host": ["localhost"], "port":"8080", "path":["v1","news","4f168b9a-8861-43d3-a1ac-b44a298910ea"] }
+      }
+    },
+    {
+      "name": "Generate Summary",
+      "request": {
+        "method": "POST",
+        "url": { "raw": "http://localhost:8080/v1/news/4f168b9a-8861-43d3-a1ac-b44a298910ea/summary", "protocol": "http", "host": ["localhost"], "port":"8080", "path":["v1","news","4f168b9a-8861-43d3-a1ac-b44a298910ea","summary"] }
+      }
+    }
+  ]
+}
