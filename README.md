@@ -59,7 +59,7 @@ News Service API
 
 # Getting Started
 Clone the repository
-git clone 
+git clone github.com/nm370130/news_service
 cd news_service
 
 Run With Docker (Recommended)
